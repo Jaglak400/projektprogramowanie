@@ -14,6 +14,7 @@ import { RolePipe } from './pipes/role.pipe';
 import { ServiceComponent } from './service/service.component';
 import { ClientPanelComponent } from './client-panel/client-panel.component';
 import { CarServiceComponent } from './car-service/car-service.component';
+import { ComplaintPanelComponent } from './complaint-panel/complaint-panel.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { CarServiceComponent } from './car-service/car-service.component';
     ServiceComponent,
     ClientPanelComponent,
     CarServiceComponent,
+    ComplaintPanelComponent,
   ],
   imports: [
     BrowserModule,
