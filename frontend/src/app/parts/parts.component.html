@@ -1,0 +1,56 @@
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Nazwa</th>
+    <th>W wyposażeniu</th>
+    <th>Cena</th>
+    <th>Akcje</th>
+  </tr>
+
+  <tr *ngFor="let part of parts; trackBy: trackByFn">
+    <td>{{ part.id }}</td>
+    <td *ngIf="partToEdit?.id !== part.id">{{ part.name }}</td>
+    <td *ngIf="partToEdit?.id === part.id">
+      <div [formGroup]="editPartForm">
+        <input type="text" formControlName="name">
+      </div>
+    </td>
+    <td *ngIf="partToEdit?.id !== part.id">{{ part.inStock }}</td>
+    <td *ngIf="partToEdit?.id === part.id">
+      <div [formGroup]="editPartForm">
+        <input type="number" formControlName="amount">
+      </div>
+    </td>
+    <td *ngIf="partToEdit?.id !== part.id">{{ part.price }}</td>
+    <td *ngIf="partToEdit?.id === part.id">
+      <div [formGroup]="editPartForm">
+        <input type="number" formControlName="price">
+      </div>
+    </td>
+    <td *ngIf="partToEdit?.id !== part.id">
+      <button (click)="editPart(part)">Edit</button>
+      <button (click)="deletePart(part.id)">Delete</button>
+    </td>
+    <td *ngIf="partToEdit?.id === part.id">
+      <button (click)="updatePart()">Save</button>
+      <button (click)="cancelEdit()">Cancel</button>
+    </td>
+  </tr>
+</table>
+
+<h3 style="text-align: left; margin-left: 20px">Dodaj nową część</h3>
+<form [formGroup]="addPartForm" (ngSubmit)="addPart()">
+  <label style="display: block;">
+    Nazwa:
+    <input type="text" name="name" required formControlName="name">
+  </label>
+  <label style="display: block;">
+    W wyposażeniu:
+    <input type="number" name="amount" required formControlName="amount">
+  </label>
+  <label style="display: block;">
+    Cena:
+    <input type="number" name="price" step="0.01" required formControlName="price">
+  </label>
+  <button type="submit">Dodaj</button>
+</form>

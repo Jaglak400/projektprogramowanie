@@ -1,0 +1,47 @@
+<table style="border: black 1px solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Imię</th>
+    <th>Nazwisko</th>
+    <th>Nazwa Użytkownika</th>
+    <th>Role</th>
+    <th>Akcje</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{ user.id }}</td>
+    <td>{{ user.name }}</td>
+    <td>{{ user.surname }}</td>
+    <td>{{ user.username }}</td>
+    <td>
+      <span *ngFor="let role of user.roles">
+        {{ role | formatRole }},
+      </span>
+    </td>
+    <td>
+      <button (click)="deleteUser(user.id)">Usuń</button>
+      <button (click)="editUser(user)">Edytuj</button>
+    </td>
+  </tr>
+</table>
+
+<h3 style="text-align: left; margin-left: 20px">Dodaj użytkownika</h3>
+<form (ngSubmit)="saveUser()">
+  <label for="username">Nazwa użytkownika:</label>
+  <input id="username" [(ngModel)]="newUser.username" name="username" required>
+
+  <label for="password">Hasło:</label>
+  <input id="password" type="password" [(ngModel)]="newUser.password" name="password">
+
+  <label for="name">Imię:</label>
+  <input id="name" [(ngModel)]="newUser.name" name="name" required>
+
+  <label for="surname">Nazwisko:</label>
+  <input id="surname" [(ngModel)]="newUser.surname" name="surname" required>
+
+  <label for="roles">Role:</label>
+  <select id="roles" multiple [(ngModel)]="newUser.roles" name="roles">
+    <option *ngFor="let role of availableRoles" [ngValue]="role">{{ role }}</option>
+  </select>
+
+  <button type="submit">Zapisz użytkownika</button>
+</form>

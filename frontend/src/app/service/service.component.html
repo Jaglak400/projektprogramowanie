@@ -1,0 +1,106 @@
+<table style="border: black 1px solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Opis</th>
+    <th>Status</th>
+    <th>Klient</th>
+    <th>Serwisant</th>
+    <th>Usługa</th>
+    <th>Części</th>
+    <th>Koszt części</th>
+    <th>Faktura VAT</th>
+    <th>Akcje</th>
+  </tr>
+  <tr *ngFor="let service of services">
+    <td>{{ service.id }}</td>
+    <td>
+      <ng-container *ngIf="!service.editing">
+        {{ service.description }}
+      </ng-container>
+      <ng-container *ngIf="service.editing">
+        <input [(ngModel)]="service.description" />
+      </ng-container>
+    </td>
+    <td (click)="toggleStatusEdit(service)">
+      <ng-container *ngIf="!service.editingStatus">{{ service.status }}</ng-container>
+      <div *ngIf="service.editingStatus" class="status-options">
+        <div *ngFor="let option of statusOptions" class="status-option" (click)="selectStatus(service, option)">{{ option }}</div>
+      </div>
+    </td>
+    <td>{{ service.client.name + " " + service.client.surname }}</td>
+    <td>{{ service.serviceMan.name + " " + service.serviceMan.surname }}</td>
+    <td>
+      @if(service.carServices.length > 0){
+        @for (carService of service.carServices; track $index) {
+          {{ carService.name }}<br>
+        }
+      }
+      @else {
+        -
+      }
+    </td>
+    <td>
+      <ng-container *ngIf="!service.editing">
+        <span *ngFor="let servicePart of service.serviceParts">
+          {{ servicePart.part.name }} x {{ servicePart.count }} <br>
+        </span>
+      </ng-container>
+      <ng-container *ngIf="service.editing">
+        <div *ngFor="let servicePart of service.serviceParts">
+          {{ servicePart.part.name }} x <input type="number" [(ngModel)]="servicePart.count" min="1" (change)="onPartAmountChangeManual(servicePart, $event)" />
+        </div>
+        <div *ngFor="let part of parts">
+          <label *ngIf="!isPartCheckedEdit(service, part)">
+            <input type="checkbox" [value]="part.id" (change)="onPartChangeManual($event, service, part)" [checked]="isPartCheckedEdit(service, part)"> {{ part.name }} / {{ part.inStock }}
+            <ng-container *ngIf="isPartCheckedEdit(service, part)">
+              <input type="number" [id]="'partAmount_' + part.id" [defaultValue]="1" (change)="onPartAmountChange($event, part)">
+            </ng-container>
+          </label>
+        </div>
+      </ng-container>
+    </td>
+    <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
+    <td><button (click)="generatePDF(service)">Pobierz</button></td>
+    <td>
+      <button *ngIf="!service.editing" (click)="toggleEdit(service)">Edytuj</button>
+      <button *ngIf="service.editing" (click)="saveEdit(service)">Zapisz</button>
+      <button *ngIf="service.editing" (click)="cancelEdit(service)">Anuluj</button>
+      <button (click)="deleteService(service.id)">Usuń</button>
+    </td>
+  </tr>
+</table>
+
+<h3 style="text-align: left; margin-left: 20px">Dodaj/Edytuj usługę</h3>
+<form [formGroup]="serviceForm">
+  <label for="username">Opis:</label>
+  <input id="username" name="description" required formControlName="description">
+
+  <label for="client">Klient:</label>
+  <select id="client" name="client" formControlName="client">
+    <option *ngFor="let client of clients" [value]="client.id">{{ client.name + " " + client.surname }}</option>
+  </select>
+
+  <label for="serviceMan">Serwisant:</label>
+  <select id="serviceMan" name="serviceMan" formControlName="serviceMan">
+    <option *ngFor="let serviceMan of serviceMans" [value]="serviceMan.id">{{ serviceMan.name + " " + serviceMan.surname }}</option>
+  </select>
+
+  <label>Części:</label>
+  <div *ngFor="let part of parts">
+    <input type="checkbox" [value]="part.id" (change)="onPartChange($event, part.id)"> {{ part.name }} / {{ part.inStock }}
+    @if(isPartChecked(part)){
+      <input type="number" [defaultValue]="1" (change)="onPartAmountChange($event, part)">
+    }
+  </div>
+
+  <label>Usługa:</label>
+  <div *ngFor="let carService of carServices">
+    <input
+      type="checkbox"
+      [value]="carService.id"
+      (change)="onCheckboxChange($event)"
+    > {{ carService.name }}
+  </div>
+
+  <button (click)="addService()">Dodaj usługę</button>
+</form>

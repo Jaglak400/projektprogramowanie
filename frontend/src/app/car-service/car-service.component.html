@@ -1,0 +1,37 @@
+<table style="border: red 1px solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Usługa</th>
+    <th>Cena</th>
+    <th>Akcje</th>
+  </tr>
+  <tr *ngFor="let service of carServices">
+    <td>{{ service.id }}</td>
+    <td *ngIf="editingServiceId !== service.id">{{ service.name }}</td>
+    <td *ngIf="editingServiceId === service.id">
+      <input [(ngModel)]="editedService.name" required>
+    </td>
+    <td *ngIf="editingServiceId !== service.id">{{ service.price }}</td>
+    <td *ngIf="editingServiceId === service.id">
+      <input type="number" [(ngModel)]="editedService.price" required>
+    </td>
+    <td>
+      <button *ngIf="editingServiceId !== service.id" (click)="editService(service)">Edytuj</button>
+      <button *ngIf="editingServiceId === service.id" (click)="cancelEdit()">Anuluj</button>
+      <button *ngIf="editingServiceId === service.id" (click)="saveService()">Zapisz</button>
+      <button (click)="deleteService(service.id)">Usuń</button>
+    </td>
+  </tr>
+</table>
+
+<div>
+  <form (ngSubmit)="addCarService()">
+    <label for="name">Usługa:</label>
+    <input type="text" id="name" [(ngModel)]="carServiceRequest.name" name="name" required>
+
+    <label for="price">Cena:</label>
+    <input type="number" id="price" [(ngModel)]="carServiceRequest.price" name="price" required>
+
+    <button type="submit">Dodaj usługę</button>
+  </form>
+</div>

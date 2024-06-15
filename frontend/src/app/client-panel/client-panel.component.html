@@ -1,0 +1,28 @@
+<table style="border: black 1px solid; border-collapse: collapse;">
+    <tr>
+      <th>ID</th>
+      <th>Opis</th>
+      <th>Status</th>
+      <th>Serwisant</th>
+      <th>Koszt</th>
+      <th style="width: 95px;">Faktura VAT</th>
+
+    </tr>
+    <tr *ngFor="let service of clientServices">
+      <td>{{ service.id }}</td>
+      <td>{{ service.description }}</td>
+      <td>{{ service.status }}</td>
+      <td>{{ service.serviceMan.name + " " + service.serviceMan.name}}</td>
+      @if (service.status === "COMPLETED") {
+        <td>
+            {{ calculateCost(service.serviceParts) }}zł
+        </td>
+      }
+      @else {
+        <td> - </td>
+      }
+      <td>
+        <button (click)="generatePDF(service)" [disabled]="service.status !== 'COMPLETED'">Pobierz</button>
+      </td>
+    </tr>
+  </table>
