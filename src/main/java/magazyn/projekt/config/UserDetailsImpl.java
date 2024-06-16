@@ -22,6 +22,7 @@ public class UserDetailsImpl implements UserDetails {
     // Wymaga interfejs user details
     private Collection<? extends GrantedAuthority> authorities;
 
+    // Konstruktor
     public UserDetailsImpl(Long id, String username, String password,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -32,10 +33,14 @@ public class UserDetailsImpl implements UserDetails {
 
     // Konwersja własnej klasy użytkownika na wymagana przez spring security
     public static UserDetailsImpl build(User user) {
+        // Mapowanie ról użytkownika na Spring GrantedAuthority
         List<GrantedAuthority> authorities = user.getRoles().stream()
+                // Dla każdej roli w strumieniu mapuje nazwę roli na obiekt SimpleGrantedAuthority który jest typem Spring Security reprezentującym uprawnienie
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                // zbiera zmapowane obiekty SimpleGrantedAuthority do listy
                 .collect(Collectors.toList());
 
+        // Zwracanie obiektu UserDetailsImpl z danymi użytkownika
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
@@ -82,14 +87,18 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
-    // Metoda do porównania dwóch obiektów np userdetails i porównuje ID
+    // Metoda która porównuje dwa obiekty UserDetailsImpl na podstawie ich ID użytkownika.
     @Override
     public boolean equals(Object o) {
+        // Jeśli referencje są identyczne obiekty są równe
         if (this == o)
             return true;
+        // Jeśli obiekt porównywany jest null lub nie jest instancją UserDetailsImpl obiekty nie są równe
         if (o == null || getClass() != o.getClass())
             return false;
+        // Konwersja obiektu do typu UserDetailsImpl
         UserDetailsImpl user = (UserDetailsImpl) o;
+        // Porównanie ID użytkownika obecnego obiektu UserDetailsImpl z ID użytkownika drugiego obiektu UserDetailsImpl
         return Objects.equals(id, user.id);
     }
 }

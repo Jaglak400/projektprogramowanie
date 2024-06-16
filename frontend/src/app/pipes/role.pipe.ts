@@ -6,9 +6,10 @@ import { RoleResponse } from '../model/role.response';
 })
 export class RolePipe implements PipeTransform {
 
+  // Transformacja roli na odpowiednią postać tekstową
   transform(role: RoleResponse): string {
-    let roleStr = role.name;
-    return roleStr.split('_')[1];
+    let roleStr = role.name; // Pobranie nazwy roli z obiektu RoleResponse
+    return roleStr.split('_')[1]; // Zwrócenie drugiej części nazwy roli (po podziale na podkreślenie)
   }
 
 }

@@ -190,9 +190,11 @@ public class ServiceController {
         return ResponseEntity.ok(parts);
     }
 
+    // Metoda obsługująca żądanie POST na ścieżce /api/service/{serviceId}/car-service
     @PostMapping("/{serviceId}/car-service")
     @PreAuthorize("hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> assignCarServicesToService(@PathVariable Long serviceId, @RequestBody Long[] carServicesIds) {
+        // Pobranie usługi na podstawie jej identyfikatora
         var serviceOpt = serviceRepo.findById(serviceId);
         if (serviceOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -201,16 +203,18 @@ public class ServiceController {
         var service = serviceOpt.get();
         var carServices = new HashSet<CarService>();
 
+        // Pętla po identyfikatorach usług samochodowych które mają być przypisane do usługi
         for (var carServiceId : carServicesIds) {
+            // Pobranie usługi samochodowej na podstawie jej identyfikatora
             var carServiceOpt = carServiceRepo.findById(carServiceId);
             if (carServiceOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
-            carServices.add(carServiceOpt.get());
+            carServices.add(carServiceOpt.get()); // Dodanie usługi samochodowej do zbioru
         }
 
-        service.getCarServices().addAll(carServices);
-        serviceRepo.save(service);
+        service.getCarServices().addAll(carServices); // Dodanie zbioru usług samochodowych do usługi
+        serviceRepo.save(service); // Zapisanie zmian w bazie danych
         return ResponseEntity.ok().build();
     }
 }

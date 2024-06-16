@@ -21,7 +21,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    // Logger do logowania błędów i informacji
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+
     @Override
     // Filtrowanie autoryzacji. Sprawdza czy jest token, waliduje go i pobiera użytkownika
     // tworząc security context
@@ -29,17 +31,20 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
+            // Walidacja tokenu JWT
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
+                // Ładowanie szczegółów użytkownika
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                                null, userDetails.getAuthorities());
 
+                // Ustawianie szczegółów uwierzytelnienia
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                // Ustawianie kontekstu bezpieczeństwa
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

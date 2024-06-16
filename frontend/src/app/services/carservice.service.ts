@@ -12,22 +12,27 @@ export class CarserviceService {
 
   constructor(private http: HttpClient) { }
 
+  // Metoda która pobiera wszystkie usługi samochodowe
   getAllCarServices(): Observable<any> {
     return this.http.get(this.API);
   }
 
+  // Metoda która pobiera wszystkie usługi samochodowe jako tebele CarServiceResponse
   getAll(): Observable<CarServiceResponse[]> {
     return this.http.get<CarServiceResponse[]>(this.API);
   }
 
+  // Metoda która dodaje nową usługe samochodową
   addCarService(carServiceRequest: CarServiceRequest): Observable<any> {
     return this.http.post(this.API, carServiceRequest);
   }
 
+  // Metoda która aktualizuje usługe samochodową
   updateCarService(id: number, carServiceRequest: CarServiceRequest): Observable<any> {
     return this.http.put(`${this.API}/${id}`, carServiceRequest);
   }
 
+  // Metoda która usuwa usługe samochodową
   deleteCarService(id: number): Observable<any> {
     return this.http.delete(`${this.API}/${id}`);
   }

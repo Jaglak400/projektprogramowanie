@@ -32,6 +32,7 @@ public class WebSecurityConfig{
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
+    // Bean do filtrowania tokenów JWT
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
@@ -41,26 +42,29 @@ public class WebSecurityConfig{
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(userDetailsService); // Ustawienie serwisu do zarządzania użytkownikami
+        authProvider.setPasswordEncoder(passwordEncoder()); // Ustawienie enkodera hasła
 
         return authProvider;
     }
+
+    // Bean do zarządzania autoryzacją
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    // Bean do enkodowania hasła
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    //
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                //obsługa wyjątków
+                // Obsługa wyjątków
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 // wyłączenie sesji
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -72,6 +76,7 @@ public class WebSecurityConfig{
                                 // Na reszte endpointów jest wymagana autoryzajca
                                 .anyRequest().authenticated()
                 ).cors(corsConfigurer -> {
+                    // Konfiguracja CORS
                     // Wstrzyknięcie klasy odpowiedzialnej za definicje corsa (np localhost 4200)
                     corsConfigurer.configurationSource(corsConfigurationSource());
                 });
@@ -80,20 +85,22 @@ public class WebSecurityConfig{
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+        return http.build(); // Zwrócenie skonfigurowanej SecurityFilterChain
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(origin); // Dostęp do konkretnych źródeł
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*"); // Zezwalaj na wszystkie metody HTTP
-        configuration.setAllowCredentials(true);
+        configuration.addAllowedOrigin(origin); // Ustawienie dozwolonych źródeł origin
+        configuration.addAllowedHeader("*"); // Ustawienie dozwolonych nagłówków
+        configuration.addAllowedMethod("*"); // Ustawienie dozwolonych metod HTTP
+        configuration.setAllowCredentials(true); // Zezwolenie na przesyłanie ciasteczek z uwierzytelnieniem
 
+
+        // Jjest używany do definiowania konfiguracji CORS dla różnych URL w aplikacji Spring
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
-        return source;
+        return source; // Zwrócenie skonfigurowanego źródła konfiguracji CORS
     }
 }

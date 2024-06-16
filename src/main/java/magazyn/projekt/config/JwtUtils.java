@@ -34,6 +34,7 @@ public class JwtUtils {
     @Value("${projekt.jwtCookieName}")
     private String jwtCookie;
 
+    // Pobieranie tokenu JWT z ciasteczka
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         if (cookie != null) {

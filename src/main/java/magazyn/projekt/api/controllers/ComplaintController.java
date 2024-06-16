@@ -18,12 +18,14 @@ public class ComplaintController {
     ComplaintRepo complaintRepo;
     TokenBasedAuthorizationHandler authorizationHandler;
 
+    // Pobranie wszystkich reklamacji, wymagana rola klienta, serwisu lub administratora
     @GetMapping
     @PreAuthorize("hasRole('CLIENT') OR hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> getAllComplaints() {
         return ResponseEntity.ok(complaintRepo.findAll());
     }
 
+    // Klasa DTO dla żądania dodania reklamacji
     @Getter
     @Setter
     public static class AddComplaintRequest {
@@ -32,6 +34,7 @@ public class ComplaintController {
 
     }
 
+    // Aktualizacja statusu reklamacji
     @PutMapping
     @PreAuthorize("hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> updateStatus(@RequestParam("complaint") Long complaintId,
@@ -46,10 +49,12 @@ public class ComplaintController {
         return ResponseEntity.ok(complaint);
     }
 
+    // Dodawanie reklamacji
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<?> addComplaint(@RequestBody AddComplaintRequest addComplaintRequest, HttpServletRequest request) {
         var user = authorizationHandler.getUserFromHttpRequest(request);
+        // Sprawdzenie, czy użytkownik ma przypisaną usługę o podanym ID
         var userServiceOpt = user.getClientServices()
                 .stream()
                 .filter(cs -> cs.getId().longValue() == addComplaintRequest.getServiceId())
@@ -57,7 +62,9 @@ public class ComplaintController {
         if (userServiceOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Klient nie posiada takiej usługi");
         }
+        // Pobranie usługi klienta na podstawie znalezionej opcji
         var userService = userServiceOpt.get();
+        // Zapisanie nowej reklamacji w repozytorium skarg
         var complaint = complaintRepo.save(Complaint.builder()
                 .service(userService)
                 .status(Complaint.Status.ONGOING)
@@ -67,6 +74,7 @@ public class ComplaintController {
         return ResponseEntity.ok(complaint);
     }
 
+    // Usuwanie reklamacji
     @DeleteMapping
     @PreAuthorize("hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> deleteComplaint(@RequestParam("complaint") Long complaintId) {

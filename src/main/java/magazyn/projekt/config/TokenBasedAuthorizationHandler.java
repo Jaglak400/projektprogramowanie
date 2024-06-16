@@ -22,6 +22,7 @@ public class TokenBasedAuthorizationHandler {
             User user = userRepo.findUserByUsername(username).orElse(null);
             return user;
         }
+        // Zwracanie null jeśli token JWT nie jest obecny w żądaniu
         return null;
     }
 }

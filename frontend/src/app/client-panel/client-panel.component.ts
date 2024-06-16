@@ -3,6 +3,7 @@ import { ClientService } from '../services/client.service';
 import { ServiceResponse } from '../model/service/service-response';
 import { ServicePartResponse } from '../model/part/service-part-response';
 import {jsPDF} from "jspdf";
+import {CarServiceResponse} from "../model/carService/car-service-response";
 
 @Component({
   selector: 'app-client-panel',
@@ -22,11 +23,21 @@ export class ClientPanelComponent {
   clientServices: ServiceResponse[] = [];
 
 
-  calculateCost(serviceParts: ServicePartResponse[]){
+// Obliczanie kosztu części w usłudze
+  calculatePartCost(serviceParts: ServicePartResponse[]){
     let cost = 0;
     serviceParts.forEach(sPart => {
       cost += sPart.part.price * sPart.count
     });
+    return cost;
+  }
+
+  // Obliczanie kosztu usługi
+  calculateCarServicesCost(carServices: CarServiceResponse[]){
+    let cost = 0;
+    carServices.forEach(cService => {
+      cost += cService.price
+    })
     return cost;
   }
 
@@ -48,6 +59,9 @@ export class ClientPanelComponent {
           .catch(reject);
       });
     }
+    const totalPartsCost = this.calculatePartCost(service.serviceParts);
+    const totalServicesCost = this.calculateCarServicesCost(service.carServices);
+    const totalCost = totalPartsCost + totalServicesCost;
 
     let myFont = await readLocalFileAsBinary("../assets/fonts/ARIAL.TTF");
     doc.addFileToVFS("MyFont.ttf", myFont);
@@ -79,7 +93,11 @@ export class ClientPanelComponent {
     yPos += 10;
     addRow(yPos, 'Serwisant:', service.serviceMan.name + " " + service.serviceMan.surname);
     yPos += 10;
-    addRow(yPos, 'Koszt części:', this.calculateCost(service.serviceParts) + ' zł');
+    addRow(yPos, 'Koszt części:', this.calculatePartCost(service.serviceParts) + ' zł');
+    yPos += 10;
+    addRow(yPos, 'Koszt usług:', this.calculateCarServicesCost(service.carServices) + ' zł');
+    yPos += 10;
+    addRow(yPos, 'Całkowity koszt:', totalCost + ' zł');
 
     doc.setFontSize(10);
     doc.setTextColor(100);
@@ -88,5 +106,4 @@ export class ClientPanelComponent {
 
     doc.save(`Faktura_${service.id}.pdf`);
   }
-
 }

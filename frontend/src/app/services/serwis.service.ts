@@ -44,6 +44,7 @@ export class SerwisService {
     return this.http.delete(`${this.API}?service=${serviceId}`);
   }
 
+  // Metoda do przypisywania usług samochodowych do usługi o podanym identyfikatorze
   assignCarServicesToService(serviceId: number, carServiceIds: number[]): Observable<any> {
     return this.http.post<any>(`${this.API}/${serviceId}/car-service`, carServiceIds);
   }

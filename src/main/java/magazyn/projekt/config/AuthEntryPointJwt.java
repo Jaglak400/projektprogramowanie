@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-// Działa gdy użytkownik nie posiada autentykacji
+// Komponent Spring odpowiadający za przetwarzanie błędów autentykacji
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     @Override
 
@@ -23,12 +23,14 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
+        // Tworzenie mapy z treścią odpowiedzi JSON
         final Map<String, Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
         body.put("message", authException.getMessage());
         body.put("path", request.getServletPath());
 
+        // Serializacja mapy do JSON i zapisanie jej w strumieniu odpowiedzi
         final ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), body);
     }

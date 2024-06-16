@@ -35,12 +35,15 @@ public class AuthController {
     @Autowired
     TokenBasedAuthorizationHandler authorizationHandler;
 
+    // Metoda obsługująca żądanie GET dla scieżki /api/auth/roles
     @GetMapping("/roles")
     public ResponseEntity<?> getUserRoles() {
+        // Pobranie szczegółowych informacji o zalogowanym użytkowniku
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // Pobranie ról przypisanych do użytkownika
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                .map(item -> item.getAuthority()) // Mapowanie roli do nazwy
+                .collect(Collectors.toList()); // Zbieranie wyników do listy
         return ResponseEntity.ok(roles);
     }
 

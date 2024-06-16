@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class CarServiceController {
     CarServiceRepo carServiceRepo;
 
+    // Pobranie wszystkich usług
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllCarService() {
@@ -21,6 +22,7 @@ public class CarServiceController {
         return ResponseEntity.ok(carServices);
     }
 
+    // Dodanie nowej usługi samochodowej
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addNewCarService(@RequestBody CarServiceRequest carServiceRequest) {
@@ -32,6 +34,7 @@ public class CarServiceController {
         return ResponseEntity.ok(carRequest);
     }
 
+    // Usunięcie usługi samochodowej
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCarService(@PathVariable("id") Long id) {
@@ -43,6 +46,7 @@ public class CarServiceController {
         return ResponseEntity.ok().build();
     }
 
+    // Aktualizacja usługi samochodowej
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCarService(@PathVariable("id") Long id, @RequestBody CarServiceRequest carServiceRequest) {
@@ -50,12 +54,12 @@ public class CarServiceController {
         if (carServiceOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        var carService = carServiceOpt.get();
+        var carService = carServiceOpt.get(); // Pobranie istniejącej usługi
         carService = carService.toBuilder()
-                .name(carServiceRequest.name)
-                .price(carServiceRequest.price)
+                .name(carServiceRequest.name) // Aktualizacja nazwy usługi
+                .price(carServiceRequest.price) // Aktualizacja ceny usługi
                 .build();
-        carServiceRepo.save(carService);
+        carServiceRepo.save(carService); // Zapisanie zaktualizowanej usługi do repozytorium
         return ResponseEntity.ok(carService);
     }
 }

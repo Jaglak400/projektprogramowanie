@@ -12,15 +12,18 @@ export class ComplaintserviceService {
 
   constructor(private http: HttpClient) { }
 
+  // Metoda która pobiera wszystkie reklamacje jako tebele COmplaintResponse
   getAllComplaints(): Observable<ComplaintResponse[]> {
     return this.http.get<ComplaintResponse[]>(`${this.API}`);
   }
 
+  // Metoda która dodaje reklamacje na podstawie podanego ID usługi
   addComplaint(serviceId: number, description: string): Observable<ComplaintResponse> {
     const payload = { serviceId, description };
     return this.http.post<ComplaintResponse>(`${this.API}`, payload);
   }
 
+  // Metoda która aktualizuje status reklamacji
   updateComplaintStatus(complaintId: number, status: string): Observable<ComplaintResponse> {
     return this.http.put<ComplaintResponse>(`${this.API}?complaint=${complaintId}&status=${status}`, {});
   }

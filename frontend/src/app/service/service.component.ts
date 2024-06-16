@@ -238,18 +238,20 @@ export class ServiceComponent implements OnInit{
     await this.partsService.updatePart(partInDb.id, partInDb).toPromise();
   }
 
+  // Obsługa zmiany statusu checkboxa
   onCheckboxChange(event: any) {
     const selectedCarServices = this.serviceForm?.value.carService || [];
 
+    // Dodanie lub usunięcie wartości z listy wybranych usług w zależności od stanu checkboxa
     if (event.target.checked) {
-      selectedCarServices.push(event.target.value);
+      selectedCarServices.push(event.target.value); // Dodanie wartości do tablicy
     } else {
       const index = selectedCarServices.indexOf(event.target.value);
       if (index !== -1) {
-        selectedCarServices.splice(index, 1);
+        selectedCarServices.splice(index, 1); // Usunięcie wartości z tablicy
       }
     }
-
+    // Ustawienie zaktualizowanej listy wybranych usług samochodowych z powrotem do wartości formularza
     this.serviceForm?.get('carService')?.setValue(selectedCarServices);
   }
 
@@ -376,6 +378,9 @@ export class ServiceComponent implements OnInit{
           .catch(reject);
       });
     }
+    const totalPartsCost = this.calculatePartCost(service.serviceParts);
+    const totalServicesCost = this.calculateCarServicesCost(service.carServices);
+    const totalCost = totalPartsCost + totalServicesCost;
 
     let myFont = await readLocalFileAsBinary("../assets/fonts/ARIAL.TTF");
     doc.addFileToVFS("MyFont.ttf", myFont);
@@ -410,6 +415,8 @@ export class ServiceComponent implements OnInit{
     addRow(yPos, 'Koszt części:', this.calculatePartCost(service.serviceParts) + ' zł');
     yPos += 10;
     addRow(yPos, 'Koszt usług:', this.calculateCarServicesCost(service.carServices) + ' zł');
+    yPos += 10;
+    addRow(yPos, 'Całkowity koszt:', totalCost + ' zł');
 
     doc.setFontSize(10);
     doc.setTextColor(100);

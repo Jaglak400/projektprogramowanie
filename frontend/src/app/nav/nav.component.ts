@@ -17,9 +17,11 @@ export class NavComponent implements OnInit {
     private storageService: StorageService,
     private router: Router
   ) {
+    // Ukrywa pasek nav podczas logowania
     this.router.events.pipe(
       filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
+      // Ustawienie zmiennej showNavBar na wartość false gdy użytkownik jest na stronie logowania (/login) lub na stronie głównej ('/')
       this.showNavBar = event.url !== "/login" && event.url !== '/';
     });
   }
