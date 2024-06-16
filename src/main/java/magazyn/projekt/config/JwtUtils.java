@@ -21,6 +21,7 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+// Dane z pliku application.yml
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
@@ -42,10 +43,12 @@ public class JwtUtils {
         }
     }
 
+    // Tworzenie ciasteczka z użytkownika
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
                 .path("/")
+                // Czas życia 1 dzień
                 .maxAge(24 * 60 * 60)
                 .httpOnly(true)
                 .secure(true)
@@ -53,20 +56,24 @@ public class JwtUtils {
         return cookie;
     }
 
+    // Wylogowanie użytkownika
     public ResponseCookie getCleanJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, "").path("/").secure(true).maxAge(0).build();
         return cookie;
     }
 
+    // Wyciągniecie nazwy użytkownika z tokenu
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
+    // Dekodowanie tokenu przy użyciu secret
     private Key key() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
+    // Walidacja tokenu, sprawdzenie czy token jest OK
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
@@ -83,6 +90,7 @@ public class JwtUtils {
         return false;
     }
 
+    // Generowanie tokenu po nazwie użytkownika
     public String generateTokenFromUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)

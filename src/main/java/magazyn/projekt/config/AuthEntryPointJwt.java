@@ -14,8 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+// Działa gdy użytkownik nie posiada autentykacji
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     @Override
+
+    // Daje wiadomość zwrotną podczas braku autentkacji
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

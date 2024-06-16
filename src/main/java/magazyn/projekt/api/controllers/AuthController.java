@@ -4,6 +4,7 @@ import magazyn.projekt.api.model.user.LoginRequest;
 import magazyn.projekt.api.model.user.LoginResponse;
 import magazyn.projekt.api.repos.UserRepo;
 import magazyn.projekt.config.JwtUtils;
+import magazyn.projekt.config.TokenBasedAuthorizationHandler;
 import magazyn.projekt.config.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,17 @@ public class AuthController {
     AuthenticationManager authenticationManager;
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    TokenBasedAuthorizationHandler authorizationHandler;
+
+    @GetMapping("/roles")
+    public ResponseEntity<?> getUserRoles() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(roles);
+    }
 
     // Metoda obsługująca żądanie POST dla endpointu /login która pozwala użytkownikowi zalogować się do systemu
     @PostMapping("/login")

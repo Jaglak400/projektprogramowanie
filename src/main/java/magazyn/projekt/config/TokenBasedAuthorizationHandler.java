@@ -13,10 +13,12 @@ public class TokenBasedAuthorizationHandler {
     @Autowired
     JwtUtils jwtUtils;
 
+    // Wyciągniecie użytkownika bezpośrednio z requesta http
     public User getUserFromHttpRequest(HttpServletRequest request) {
         var cookie = jwtUtils.getJwtFromCookies(request);
         if (cookie != null) {
             String username = jwtUtils.getUserNameFromJwtToken(cookie);
+            // Wyszukiwanie użytkownika
             User user = userRepo.findUserByUsername(username).orElse(null);
             return user;
         }

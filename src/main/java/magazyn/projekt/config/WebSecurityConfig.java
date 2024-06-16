@@ -31,10 +31,12 @@ public class WebSecurityConfig{
     UserDetailsServiceImpl userDetailsService;
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -54,19 +56,27 @@ public class WebSecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
+    //
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                //obsługa wyjątków
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                // wyłączenie sesji
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Autoryzacja requestów
                 .authorizeHttpRequests(auth ->
                         auth
+                                // Na te strony pozwalany jest request bez autoryzacji
                                 .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll()
+                                // Na reszte endpointów jest wymagana autoryzajca
                                 .anyRequest().authenticated()
                 ).cors(corsConfigurer -> {
+                    // Wstrzyknięcie klasy odpowiedzialnej za definicje corsa (np localhost 4200)
                     corsConfigurer.configurationSource(corsConfigurationSource());
                 });
 
+        // Wstrzykniecie filtrowania tokenów i auth providera
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 

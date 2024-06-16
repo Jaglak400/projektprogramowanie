@@ -20,4 +20,8 @@ export class ComplaintserviceService {
     const payload = { serviceId, description };
     return this.http.post<ComplaintResponse>(`${this.API}`, payload);
   }
+
+  updateComplaintStatus(complaintId: number, status: string): Observable<ComplaintResponse> {
+    return this.http.put<ComplaintResponse>(`${this.API}?complaint=${complaintId}&status=${status}`, {});
+  }
 }

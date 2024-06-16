@@ -15,11 +15,11 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-
     private String username;
     @JsonIgnore
     private String password;
 
+    // Wymaga interfejs user details
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String password,
@@ -30,6 +30,7 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
+    // Konwersja własnej klasy użytkownika na wymagana przez spring security
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -81,6 +82,7 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+    // Metoda do porównania dwóch obiektów np userdetails i porównuje ID
     @Override
     public boolean equals(Object o) {
         if (this == o)

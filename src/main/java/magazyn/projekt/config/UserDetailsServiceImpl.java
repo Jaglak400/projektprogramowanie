@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepo userRepository;
+
+    // Załadowanie użytkownika po jego nazwie i zwrócenie UserDetails
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

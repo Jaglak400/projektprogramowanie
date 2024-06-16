@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 @Component
 public class DataLoader {
+    // Tworzenie ról dla użytkownikóww roleRepo
     public DataLoader(RoleRepo roleRepo){
         if(roleRepo.findAll().isEmpty()){
             roleRepo.saveAll(Arrays.asList(
