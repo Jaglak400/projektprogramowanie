@@ -1,1 +1,31 @@
-<p>complaint-panel works!</p>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Opis</th>
+      <th>Usługa</th>
+      <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let complaint of complaints">
+      <td>{{ complaint.id }}</td>
+      <td>{{ complaint.description }}</td>
+      <td>{{ complaint.service.id }}</td>
+      <td>{{ complaint.status }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h2>Dodaj reklamację</h2>
+  <form (ngSubmit)="addComplaint()">
+    <div>
+      <label for="serviceId">Service ID:</label>
+      <input type="number" id="serviceId" [(ngModel)]="newComplaint.serviceId" name="serviceId" required>
+    </div>
+    <div>
+      <label for="description">Description:</label>
+      <input type="text" id="description" [(ngModel)]="newComplaint.description" name="description" required>
+    </div>
+    <button type="submit">Add Complaint</button>
+  </form>
