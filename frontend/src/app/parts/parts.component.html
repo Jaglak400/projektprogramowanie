@@ -4,6 +4,7 @@
     <th>Nazwa</th>
     <th>W wyposażeniu</th>
     <th>Cena</th>
+    <th>Zwrot do Dostawcy</th>
     <th>Akcje</th>
   </tr>
 
@@ -27,6 +28,7 @@
         <input type="number" formControlName="price">
       </div>
     </td>
+    <td> miejsce dla kolumny zl</td>
     <td *ngIf="partToEdit?.id !== part.id">
       <button (click)="editPart(part)">Edit</button>
       <button (click)="deletePart(part.id)">Delete</button>

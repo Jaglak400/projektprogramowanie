@@ -14,9 +14,7 @@
       <td>{{ service.status }}</td>
       <td>{{ service.serviceMan.name + " " + service.serviceMan.name}}</td>
       @if (service.status === "COMPLETED") {
-        <td>
-            {{ calculateCost(service.serviceParts) }}zł
-        </td>
+        <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
       }
       @else {
         <td> - </td>

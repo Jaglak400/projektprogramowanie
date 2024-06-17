@@ -26,7 +26,7 @@ export class PartsComponent implements OnInit {
       amount: [""],
       price: [""]
     });
-
+    // Inicjalizacja formularza edycji części z walidacją
     this.editPartForm = this.formbuilder.group({
       name: ['', Validators.required],
       amount: [0, Validators.required],
@@ -35,7 +35,7 @@ export class PartsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    // Sprawdzenie czy użytkownik jest zalogowany jeśli nie to przekierowanie na stronę logowania
     if(!this.storageService.isUserLoggedIn()){
       this.router.navigate(['']);
     }
@@ -50,10 +50,12 @@ export class PartsComponent implements OnInit {
   }
 
   addPart(): void {
+    // Pobranie wartości z formularza dodawania części
     let name = this.addPartForm.value.name;
     let amount = this.addPartForm.value.amount;
     let price = this.addPartForm.value.price;
 
+    // Utworzenie nowego żądania dodania części
     let part = new PartRequest(name, amount, price);
     this.partsService.addPart(part).subscribe((part: PartResponse) => {
         this.parts.push(part);
@@ -69,6 +71,7 @@ export class PartsComponent implements OnInit {
   }
 
   editPart(part: PartResponse): void {
+    // Przygotowanie formularza edycji na podstawie wybranej części
     this.partToEdit = part;
     this.editPartForm.setValue({
       name: part.name,
@@ -86,7 +89,9 @@ export class PartsComponent implements OnInit {
       this.editPartForm.value.price
     );
 
+    // Aktualizacja części w serwisie i zaktualizowanie listy części
     this.partsService.updatePart(this.partToEdit.id, updatedPart).subscribe((part: PartResponse) => {
+      // Szukamy indeks elementu w tablicy 'parts' który ma takie samo id jak zaktualizowany element
       const index = this.parts.findIndex(p => p.id === part.id);
       if (index !== -1) {
         this.parts[index] = part;
@@ -101,8 +106,9 @@ export class PartsComponent implements OnInit {
   }
 
   trackByFn(index: number, item: PartResponse): number {
+    // Funkcja trackBy dla optymalizacji wyświetlania listy części
     return item.id;
   }
 
-  
+
 }

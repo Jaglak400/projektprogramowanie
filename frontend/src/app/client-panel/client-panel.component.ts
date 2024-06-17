@@ -13,6 +13,7 @@ import {CarServiceResponse} from "../model/carService/car-service-response";
 export class ClientPanelComponent {
 
   constructor(private clientService: ClientService){
+    // Pobieranie usług klienta przy inicjalizacji komponentu
     clientService.getClientServices().subscribe({
       next: res => {
         this.clientServices = res;
@@ -47,22 +48,28 @@ export class ClientPanelComponent {
     });
 
     const readLocalFileAsBinary = (filePath: string) => {
+      // Zwraca nową obietnicę (Promise) która po zakończeniu zwróci łańcuch znaków
       return new Promise<string>((resolve, reject) => {
         fetch(filePath)
           .then(response => response.arrayBuffer())
           .then(arrayBuffer => {
+            // Zmienia arrayBuffer na łańcuch binarny
             const binaryString = Array.from(new Uint8Array(arrayBuffer))
               .map(byte => String.fromCharCode(byte))
-              .join('');
+              .join(''); // Łączy wszystkie znaki w jeden łańcuch
+            // Zamienia łańcuch binarny na Base64 i rozwiąż obietnicę
             resolve(btoa(binaryString));
           })
           .catch(reject);
       });
     }
+
+    // Obliczanie kosztów
     const totalPartsCost = this.calculatePartCost(service.serviceParts);
     const totalServicesCost = this.calculateCarServicesCost(service.carServices);
     const totalCost = totalPartsCost + totalServicesCost;
 
+    // Wczytywanie niestandardowej czcionki która obsługuje UTF8
     let myFont = await readLocalFileAsBinary("../assets/fonts/ARIAL.TTF");
     doc.addFileToVFS("MyFont.ttf", myFont);
     doc.addFont("MyFont.ttf", "MyFont", "normal");

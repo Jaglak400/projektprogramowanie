@@ -9,20 +9,20 @@ import { CarServiceRequest } from "../model/carService/car-service-request";
 })
 export class CarServiceComponent implements OnInit {
   carServiceRequest: CarServiceRequest = new CarServiceRequest(0, '', 0);
-  carServices: CarServiceRequest[] = [];
-  editingServiceId: number | null = null;
+  carServices: CarServiceRequest[] = []; // Tablica przechowująca wszystkie usługi
+  editingServiceId: number | null = null; // ID usługi, która jest aktualnie edytowana
   editedService: CarServiceRequest = new CarServiceRequest(0, '', 0);
 
   constructor(private carserviceService: CarserviceService) { }
 
   ngOnInit() {
-    this.loadCarServices();
+    this.loadCarServices(); // Ładowanie wszystkich usług przy inicjalizacji komponentu
   }
 
   loadCarServices() {
     this.carserviceService.getAllCarServices().subscribe({
       next: response => {
-        this.carServices = response;       
+        this.carServices = response;
       }
     });
   }
@@ -30,8 +30,8 @@ export class CarServiceComponent implements OnInit {
   addCarService() {
     if (this.carServiceRequest.name && this.carServiceRequest.price !== null) {
       this.carserviceService.addCarService(this.carServiceRequest).subscribe(response => {
-        this.carServices.push(response);
-        this.carServiceRequest = new CarServiceRequest(0, '', 0);
+        this.carServices.push(response); // Dodanie nowej usługi do tablicy
+        this.carServiceRequest = new CarServiceRequest(0, '', 0); // Resetowanie formularza
       });
     }
   }
@@ -48,11 +48,14 @@ export class CarServiceComponent implements OnInit {
 
   saveService() {
     if (this.editedService && this.editingServiceId !== null) {
+      // Sprawdza czy nazwa usługi jest ustawiona oraz cena nie jest null
       if (this.editedService.name && this.editedService.price !== null) {
+        // Wywołuje metodę aktualizacji usługi serwisowej
         this.carserviceService.updateCarService(this.editedService.id, this.editedService).subscribe(response => {
+          // Znajduje indeks usługi w tablicy 'carServices' na podstawie ID edytowanej usługi
           const index = this.carServices.findIndex(service => service.id === this.editingServiceId);
           if (index !== -1) {
-            this.carServices[index] = response;
+            this.carServices[index] = response; // Aktualizacja usługi w tablicy
           }
           this.cancelEdit();
         });

@@ -16,13 +16,13 @@ export class LoginComponent {
   loginService = inject(LoginService);
   loginForm: FormGroup;
 
-  constructor(formBuilder: FormBuilder, private storageService: StorageService){
-    if(storageService.isUserLoggedIn()){
-      if(storageService.isAdmin()){
-        this.router.navigate(['parts']);
-      }
-      else{
-        this.router.navigate(['client']);
+  constructor(formBuilder: FormBuilder, private storageService: StorageService) {
+    // Sprawdzanie czy użytkownik jest zalogowany
+    if(storageService.isUserLoggedIn()) {
+      if(storageService.isAdmin()) {
+        this.router.navigate(['parts']); // Przekierowanie admina do części
+      } else {
+        this.router.navigate(['client']); // Przekierowanie klienta do panelu klienta
       }
     }
     this.loginForm = formBuilder.group({
@@ -33,15 +33,16 @@ export class LoginComponent {
 
   testTab = [1,2,3,4,5];
 
-  login(){
+  // Funkcja logowania
+  login() {
+    let login = this.loginForm.value.login; // Pobranie loginu z formularza
+    let password = this.loginForm.value.password; // Pobranie hasła z formularza
 
-    let login = this.loginForm.value.login;
-    let password = this.loginForm.value.password;
-
+    // Wywołanie metody logowania z serwisu LoginService
     this.loginService.login(new LoginRequest(login, password)).subscribe(
       res => {
         this.storageService.safeUser(res);
-        this.router.navigate(['parts']);
+        this.router.navigate(['parts']); // Przekierowanie na stronę części
       },
       err => {
         console.log(err);
