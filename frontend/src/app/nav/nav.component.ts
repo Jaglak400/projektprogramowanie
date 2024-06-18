@@ -10,21 +10,19 @@ import { StorageService } from '../services/storage.service';
   styleUrls: ['./nav.component.scss']
 })
 export class NavComponent implements OnInit {
-  showNavBar: boolean = true;
-
   constructor(
     private loginService: LoginService,
     private storageService: StorageService,
     private router: Router
   ) {
-    // Ukrywa pasek nav podczas logowania
-    this.router.events.pipe(
-      filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      // Ustawienie zmiennej showNavBar na wartość false gdy użytkownik jest na stronie logowania (/login) lub na stronie głównej ('/')
-      this.showNavBar = event.url !== "/login" && event.url !== '/';
-    });
+    this.isAdmin = storageService.hasRole("ADMIN");
+    this.isService = storageService.hasRole("SERVICE")
+    this.isWareHouse = storageService.hasRole("WAREHOUSE")
   }
+
+  isAdmin: boolean = false;
+  isService: boolean = false;
+  isWareHouse: boolean = false;
 
   ngOnInit() {}
 

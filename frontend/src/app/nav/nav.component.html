@@ -1,11 +1,17 @@
-<nav *ngIf="showNavBar">
-  <div class="nav-links">
-    <a routerLink="/parts">Części</a> |
-    <a routerLink="/car-service">Usługi</a> |
-    <a routerLink="/users">Użytkownicy</a> |
-    <a routerLink="/service">Serwis</a> |
-    <a routerLink="/client">Klient</a> |
-    <a routerLink="/complaint">Reklamacja</a> |
-  </div>
+<nav>
+  @if (isAdmin) {
+    <div class="nav-links">     
+      <a routerLink="/parts">Części</a> |
+      <a routerLink="/car-service">Usługi</a> |
+      <a routerLink="/users">Użytkownicy</a> |
+      <a routerLink="/service">Serwis</a>    
+    </div>
+  }
+  @if (isService) {
+    <div class="nav-links">     
+      <a routerLink="/car-service">Usługi</a> |
+      <a routerLink="/service">Serwis</a>    
+    </div>
+  }  
   <button class="logout-button" (click)="logout()">Wyloguj</button>
 </nav>

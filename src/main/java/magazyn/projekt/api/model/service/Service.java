@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Service {
     public enum Status{
         UNDERTAKING, REJECTED, COMPLETED;
@@ -48,4 +48,6 @@ public class Service {
             joinColumns = @JoinColumn(name = "service_id"),
             inverseJoinColumns = @JoinColumn(name = "carService_id"))
     Set<CarService> carServices = new HashSet<>();
+    @Column(columnDefinition = "boolean default false")
+    boolean zm = false;
 }

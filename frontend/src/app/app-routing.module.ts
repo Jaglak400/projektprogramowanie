@@ -6,7 +6,6 @@ import { UsersComponent } from './users/users.component';
 import { ServiceComponent } from './service/service.component';
 import { ClientPanelComponent } from './client-panel/client-panel.component';
 import { CarServiceComponent } from "./car-service/car-service.component";
-import { ComplaintPanelComponent } from "./complaint-panel/complaint-panel.component";
 
 // Definiuje trasowanie gdzie określone są ścieżki URL i odpowiadające im komponenty
 const routes: Routes = [
@@ -17,7 +16,6 @@ const routes: Routes = [
   {path: 'service', component: ServiceComponent},
   {path: 'client', component: ClientPanelComponent},
   {path: 'car-service', component: CarServiceComponent},
-  {path: 'complaint', component: ComplaintPanelComponent},
 ];
 
 @NgModule({

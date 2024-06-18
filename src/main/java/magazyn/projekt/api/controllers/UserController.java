@@ -42,6 +42,7 @@ public class UserController {
 
     // Metoda obsługująca żądanie POST na ścieżce /api/user/add
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addUserWithRoles(@RequestBody UserRequest userRequest, HttpServletRequest request) {
         System.out.println("Otrzymano żądanie użytkownika: " + userRequest);
 
@@ -107,7 +108,7 @@ public class UserController {
 
     // Metoda obsługująca żądanie GET na ścieżce /api/user/role
     @GetMapping("/role")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') or hasRole('ADMIN')")
     public ResponseEntity<?> getUsersByRole(@RequestParam("name") String roleStr){
         Role role = roleRepo.findByName(Role.Type.valueOf(roleStr));
         if(role == null)

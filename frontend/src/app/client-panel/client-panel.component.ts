@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ClientService } from '../services/client.service';
 import { ServiceResponse } from '../model/service/service-response';
 import { ServicePartResponse } from '../model/part/service-part-response';
 import {jsPDF} from "jspdf";
 import {CarServiceResponse} from "../model/carService/car-service-response";
-
+import { ComplaintResponse } from '../model/complaint-response';
+import { BehaviorSubject } from 'rxjs';
+import { LoginService } from '../services/login.service';
+import { ComplaintService } from '../services/complaint.service';
 @Component({
   selector: 'app-client-panel',
   templateUrl: './client-panel.component.html',
@@ -12,16 +15,28 @@ import {CarServiceResponse} from "../model/carService/car-service-response";
 })
 export class ClientPanelComponent {
 
-  constructor(private clientService: ClientService){
+  constructor(private clientService: ClientService, private loginService: LoginService, private complaintService: ComplaintService){
     // Pobieranie usług klienta przy inicjalizacji komponentu
     clientService.getClientServices().subscribe({
       next: res => {
         this.clientServices = res;
       }
     });
+    this.getComplaints(); // Pobranie wszystkich reklamacji przy inicjalizacji komponentu
+    this.loginService.hasAnyRole(['ROLE_ADMIN', 'ROLE_SERVICE']).subscribe(isAdminOrService => {
+      this.isAdminOrService$.next(isAdminOrService); // Sprawdzenie czy użytkownik ma rolę admina lub serwisanta
+    });
   }
 
   clientServices: ServiceResponse[] = [];
+  complaints: ComplaintResponse[] = [];
+  newComplaint = {
+    serviceId: null as number | null, // Identyfikator usługi dla nowej reklamacji
+    description: ''
+  };
+  editingComplaint: ComplaintResponse | null = null;
+  statuses = ['ACCEPTED', 'DENIED', 'ONGOING'];
+  isAdminOrService$ = new BehaviorSubject<boolean>(false); 
 
 
 // Obliczanie kosztu części w usłudze
@@ -112,5 +127,68 @@ export class ClientPanelComponent {
     doc.text('Data: ' + new Date().toLocaleDateString(), 105, 287, { align: "center" });
 
     doc.save(`Faktura_${service.id}.pdf`);
+  }
+
+  getComplaints(): void {
+    this.complaintService.getPersonalComplaints().subscribe(data => {
+      this.complaints = data;
+    });
+  }
+
+  addComplaint(service: ServiceResponse, description: HTMLTextAreaElement): void {
+    this.complaintService.addComplaint(service.id, description.value).subscribe(data => {
+      this.complaints.push(data); // Dodanie nowej reklamacji do tablicy reklamacji
+      description.value = '';
+      this.cancelComplaint(service);
+    });
+  }
+
+  cancelComplaint(service: ServiceResponse){
+    console.log(this.complaints);
+    this.currentlyComplaining = this.currentlyComplaining.filter(c => c !== service.id);
+    console.log(this.complaints);
+  }
+
+  editStatus(complaint: ComplaintResponse): void {
+    this.editingComplaint = { ...complaint };
+  }
+
+  isEditing(complaint: ComplaintResponse): boolean {
+    return this.editingComplaint?.id === complaint.id;
+  }
+
+  cancelEdit(): void {
+    this.editingComplaint = null;
+  }
+
+  updateStatus(): void {
+    // Aktualizacja statusu reklamacji
+    if (this.editingComplaint) {
+      this.complaintService.updateComplaintStatus(this.editingComplaint.id, this.editingComplaint.status)
+        .subscribe(updatedComplaint => {
+          const index = this.complaints.findIndex(c => c.id === updatedComplaint.id);
+          if (index !== -1) {
+            this.complaints[index] = updatedComplaint; // Aktualizacja reklamacji w tablicy
+          }
+          this.cancelEdit();
+        });
+    }
+  }
+
+  // Rozpoczęcie edycji statusu reklamacji po kliknięciu jeśli użytkownik ma odpowiednią rolę
+  onStatusClick(complaint: ComplaintResponse): void {
+    if (this.isAdminOrService$.value) {
+      this.editStatus(complaint);
+    }
+  }
+
+  currentlyComplaining: number[] = [];
+
+  startComplaining(service: ServiceResponse){
+    this.currentlyComplaining.push(service.id);
+  }
+
+  isComplaining(service: ServiceResponse): boolean{
+    return this.currentlyComplaining.includes(service.id);
   }
 }

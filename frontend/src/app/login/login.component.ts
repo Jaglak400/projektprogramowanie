@@ -19,7 +19,7 @@ export class LoginComponent {
   constructor(formBuilder: FormBuilder, private storageService: StorageService) {
     // Sprawdzanie czy użytkownik jest zalogowany
     if(storageService.isUserLoggedIn()) {
-      if(storageService.isAdmin()) {
+      if(storageService.hasRole("ADMIN")) {        
         this.router.navigate(['parts']); // Przekierowanie admina do części
       } else {
         this.router.navigate(['client']); // Przekierowanie klienta do panelu klienta
@@ -41,8 +41,17 @@ export class LoginComponent {
     // Wywołanie metody logowania z serwisu LoginService
     this.loginService.login(new LoginRequest(login, password)).subscribe(
       res => {
-        this.storageService.safeUser(res);
-        this.router.navigate(['parts']); // Przekierowanie na stronę części
+        this.storageService.safeUser(res); 
+        if(this.storageService.hasRole("ADMIN") || this.storageService.hasRole("WAREHOUSE")) {        
+          this.router.navigate(['parts']); // Przekierowanie admina do części
+        } 
+        else if(this.storageService.hasRole("SERVICE")){
+          this.router.navigate(['service']);
+        }
+        else {
+          this.router.navigate(['client']); // Przekierowanie klienta do panelu klienta
+        }
+        // Przekierowanie na stronę części
       },
       err => {
         console.log(err);

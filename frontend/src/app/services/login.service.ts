@@ -2,7 +2,7 @@ import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserResponse } from '../model/user-response';
 import { LoginRequest } from '../model/login-request';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +22,11 @@ export class LoginService {
   // Metoda do wylogowania użytkownika
   logout(){
     return this.http.get(this.api + 'logout');
+  }
+
+  hasAnyRole(roles: string[]): Observable<boolean> {
+    return this.http.get<string[]>(`${this.api}roles`).pipe(
+      map(userRoles => roles.some(role => userRoles.includes(role)))
+    );
   }
 }

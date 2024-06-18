@@ -17,13 +17,17 @@ export class StorageService {
     localStorage.removeItem('user');
   }
 
+  getUser(){
+    localStorage.getItem('user')
+  }
+
   // Metoda do sprawdzania, czy użytkownik jest zalogowany
   isUserLoggedIn(): boolean{
     return localStorage.getItem('user') != null; // Sprawdzenie czy klucz user istnieje w localStorage
   }
 
   // Metoda do sprawdzania czy użytkownik jest administratorem
-  isAdmin(): boolean{
+  hasRole(role: string): boolean{
     if(!this.isUserLoggedIn())
       return false;
 
@@ -32,7 +36,7 @@ export class StorageService {
 
     if(this.isUserLoggedIn()){
       // Sprawdzenie czy użytkownik ma rolę ROLE_ADMIN
-      return user.roles.filter(role => role.name == "ROLE_ADMIN").length > 0;
+      return user.roles.filter(r => r.name === `ROLE_${role}`).length > 0;
     }
     return false;
   }

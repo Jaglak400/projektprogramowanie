@@ -3,7 +3,6 @@ package magazyn.projekt.api.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import magazyn.projekt.api.model.business.PartService;
 import magazyn.projekt.api.model.car_services.CarService;
-import magazyn.projekt.api.model.part.Part;
 import magazyn.projekt.api.model.part.PartAmountRequest;
 import magazyn.projekt.api.model.part.ServicePart;
 import magazyn.projekt.api.model.service.Service;
@@ -11,7 +10,6 @@ import magazyn.projekt.api.repos.*;
 import magazyn.projekt.config.JwtUtils;
 import magazyn.projekt.config.TokenBasedAuthorizationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +40,7 @@ public class ServiceController {
 
     // Metoda obsługująca żądanie GET na ścieżce /api/service
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> getAllServices(){
         return ResponseEntity.ok(serviceRepo.findAll());
     }
@@ -216,5 +214,21 @@ public class ServiceController {
         service.getCarServices().addAll(carServices); // Dodanie zbioru usług samochodowych do usługi
         serviceRepo.save(service); // Zapisanie zmian w bazie danych
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/document")
+    public ResponseEntity<?> setPartDocuments(@RequestParam("service") Long serviceId,
+                                              @RequestParam("document") Boolean document){
+        var serviceOpt = serviceRepo.findById(serviceId);
+        if(serviceOpt.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        var service = serviceOpt.get();
+
+        service = serviceRepo.save(service.toBuilder()
+                .zm(document)
+                .build()
+        );
+        return ResponseEntity.ok(service);
     }
 }

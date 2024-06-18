@@ -16,7 +16,7 @@ public class CarServiceController {
 
     // Pobranie wszystkich usług
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') or hasRole('ADMIN')")
     public ResponseEntity<?> getAllCarService() {
         var carServices = carServiceRepo.findAll();
         return ResponseEntity.ok(carServices);
@@ -24,7 +24,7 @@ public class CarServiceController {
 
     // Dodanie nowej usługi samochodowej
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') or hasRole('ADMIN')")
     public ResponseEntity<?> addNewCarService(@RequestBody CarServiceRequest carServiceRequest) {
         var carRequest = CarService.builder()
                 .name(carServiceRequest.name)
@@ -36,7 +36,7 @@ public class CarServiceController {
 
     // Usunięcie usługi samochodowej
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteCarService(@PathVariable("id") Long id) {
         var carService = carServiceRepo.findById(id);
         if (carService.isEmpty()) {
@@ -48,7 +48,7 @@ public class CarServiceController {
 
     // Aktualizacja usługi samochodowej
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE') or hasRole('ADMIN')")
     public ResponseEntity<?> updateCarService(@PathVariable("id") Long id, @RequestBody CarServiceRequest carServiceRequest) {
         var carServiceOpt = carServiceRepo.findById(id);
         if (carServiceOpt.isEmpty()) {

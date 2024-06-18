@@ -1,3 +1,4 @@
+<app-nav></app-nav>
 <table style="border: black 1px solid; border-collapse: collapse;">
   <tr>
     <th>ID</th>
@@ -8,6 +9,7 @@
     <th>Usługa</th>
     <th>Części</th>
     <th>Koszt części</th>
+    <th>Zwrot do magazynu (ZM)</th>
     <th>Faktura VAT</th>
     <th>Akcje</th>
   </tr>
@@ -60,6 +62,9 @@
       </ng-container>
     </td>
     <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
+    <td> 
+      {{ service.zm ? "zm" : "brak" }}
+    </td>
     <td><button (click)="generatePDF(service)">Pobierz</button></td>
     <td>
       <button *ngIf="!service.editing" (click)="toggleEdit(service)">Edytuj</button>

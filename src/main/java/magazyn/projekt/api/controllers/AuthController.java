@@ -67,12 +67,8 @@ public class AuthController {
         // Generowanie ciasteczka JWT i ustawienie go w nagłówku odpowiedzi
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-        // Pobranie ról użytkownika
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new LoginResponse(userDetails.getId(),  userDetails.getUsername(), roles));
+                .body(new LoginResponse(userDetails.getId(),  userDetails.getUsername(), userOpt.get().getRoles()));
     }
 
     // Metoda obsługująca żądanie GET dla endpointu /logout która wylogowuje użytkownika z systemu

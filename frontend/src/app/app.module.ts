@@ -14,7 +14,6 @@ import { RolePipe } from './pipes/role.pipe';
 import { ServiceComponent } from './service/service.component';
 import { ClientPanelComponent } from './client-panel/client-panel.component';
 import { CarServiceComponent } from './car-service/car-service.component';
-import { ComplaintPanelComponent } from './complaint-panel/complaint-panel.component';
 
 // Deklaracje komponentów głównych
 @NgModule({
@@ -28,7 +27,6 @@ import { ComplaintPanelComponent } from './complaint-panel/complaint-panel.compo
     ServiceComponent,
     ClientPanelComponent,
     CarServiceComponent,
-    ComplaintPanelComponent,
   ],
   imports: [
     BrowserModule,

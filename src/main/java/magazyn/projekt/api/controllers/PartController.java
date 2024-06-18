@@ -125,5 +125,23 @@ public class PartController {
         return ResponseEntity.ok(part);
     }
 
+    @PutMapping("/documents")
+    public ResponseEntity<?> setPartDocuments(@RequestParam("part") Long partId,
+                                              @RequestBody Boolean[] documents){
+        if(documents.length != 3)
+            return ResponseEntity.badRequest().build();
+        var partOpt = partRepo.findById(partId);
+        if(partOpt.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        var part = partOpt.get();
 
+        part = partRepo.save(part.toBuilder()
+                .zl(documents[0])
+                .ww(documents[1])
+                .wz(documents[2])
+                .build()
+        );
+        return ResponseEntity.ok(part);
+    }
 }

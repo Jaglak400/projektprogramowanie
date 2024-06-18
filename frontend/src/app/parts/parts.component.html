@@ -1,10 +1,14 @@
+<app-nav></app-nav>
+<h1>Części</h1>
 <table>
   <tr>
     <th>ID</th>
     <th>Nazwa</th>
     <th>W wyposażeniu</th>
     <th>Cena</th>
-    <th>Zwrot do Dostawcy</th>
+    <th>Zwrot do Dostawcy (ZL)</th>
+    <th>Wydanie Wewnętrzne (WW)</th>
+    <th>Wydanie Zewnętrzne (WZ)</th>
     <th>Akcje</th>
   </tr>
 
@@ -28,7 +32,15 @@
         <input type="number" formControlName="price">
       </div>
     </td>
-    <td> miejsce dla kolumny zl</td>
+    <td> 
+      {{ part.zl ? "ZL" : "brak" }}
+    </td>
+    <td> 
+      {{ part.ww ? "WW" : "brak" }}
+    </td>
+    <td> 
+      {{ part.wz ? "WZ" : "brak" }}
+    </td>
     <td *ngIf="partToEdit?.id !== part.id">
       <button (click)="editPart(part)">Edit</button>
       <button (click)="deletePart(part.id)">Delete</button>

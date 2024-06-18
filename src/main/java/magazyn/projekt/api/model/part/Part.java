@@ -19,4 +19,10 @@ public class Part {
     String name;
     Integer inStock = 0;
     BigDecimal price;
+    @Column(columnDefinition = "boolean default false")
+    boolean zl = false;
+    @Column(columnDefinition = "boolean default false")
+    boolean ww = false;
+    @Column(columnDefinition = "boolean default false")
+    boolean wz = false;
 }

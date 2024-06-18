@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/complaint")
 @AllArgsConstructor
 public class ComplaintController {
+    private final TokenBasedAuthorizationHandler tokenBasedAuthorizationHandler;
     ComplaintRepo complaintRepo;
     TokenBasedAuthorizationHandler authorizationHandler;
 
@@ -23,6 +24,17 @@ public class ComplaintController {
     @PreAuthorize("hasRole('CLIENT') OR hasRole('SERVICE') OR hasRole('ADMIN')")
     public ResponseEntity<?> getAllComplaints() {
         return ResponseEntity.ok(complaintRepo.findAll());
+    }
+
+    @GetMapping("/personal")
+    public ResponseEntity<?> getPersonalComplaints(HttpServletRequest request) {
+        var user = tokenBasedAuthorizationHandler.getUserFromHttpRequest(request);
+        return ResponseEntity.ok(complaintRepo.findAll().stream()
+                .filter(c -> c
+                        .getService()
+                        .getClient()
+                        .getId()
+                        .longValue() == user.getId().longValue()));
     }
 
     // Klasa DTO dla żądania dodania reklamacji
