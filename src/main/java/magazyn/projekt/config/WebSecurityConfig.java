@@ -60,7 +60,6 @@ public class WebSecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -84,7 +83,6 @@ public class WebSecurityConfig{
         // Wstrzykniecie filtrowania tokenów i auth providera
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
         return http.build(); // Zwrócenie skonfigurowanej SecurityFilterChain
     }
 
@@ -95,7 +93,6 @@ public class WebSecurityConfig{
         configuration.addAllowedHeader("*"); // Ustawienie dozwolonych nagłówków
         configuration.addAllowedMethod("*"); // Ustawienie dozwolonych metod HTTP
         configuration.setAllowCredentials(true); // Zezwolenie na przesyłanie ciasteczek z uwierzytelnieniem
-
 
         // Jjest używany do definiowania konfiguracji CORS dla różnych URL w aplikacji Spring
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

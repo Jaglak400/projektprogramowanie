@@ -12,5 +12,5 @@ export interface ServiceResponse{
     serviceMan: UserResponse;
     editingStatus?: boolean;
     editing?: boolean;
-    zm: boolean;
+    zm?: boolean;
 }

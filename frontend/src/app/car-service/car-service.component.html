@@ -4,7 +4,7 @@
     <th>ID</th>
     <th>Usługa</th>
     <th>Cena</th>
-    <th>Akcje</th>
+    <th class="actions-column">Akcje</th>
   </tr>
   <tr *ngFor="let service of carServices">
     <td>{{ service.id }}</td>
@@ -16,7 +16,7 @@
     <td *ngIf="editingServiceId === service.id">
       <input type="number" [(ngModel)]="editedService.price" required>
     </td>
-    <td>
+    <td class="actions-column">
       <button *ngIf="editingServiceId !== service.id" (click)="editService(service)">Edytuj</button>
       <button *ngIf="editingServiceId === service.id" (click)="cancelEdit()">Anuluj</button>
       <button *ngIf="editingServiceId === service.id" (click)="saveService()">Zapisz</button>

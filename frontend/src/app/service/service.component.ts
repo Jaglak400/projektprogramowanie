@@ -65,7 +65,8 @@ export class ServiceComponent implements OnInit{
       description: [``],
       client: [``],
       serviceMan: [``],
-      carService: [[]]
+      carService: [[]],
+      zm: [false]
     });
     // this.serwisService.getCarServices().subscribe((data: CarServiceResponse[]) => {
     //   this.carServices = data;
@@ -155,7 +156,50 @@ export class ServiceComponent implements OnInit{
     this.serwisService.assignPartsToService(service.id, service.serviceParts.map(sp => ({ partId: sp.part.id, amount: sp.count }))).subscribe(() => {
       this.servicesRefresh();
     });
+    let zmArray: boolean[] = [service.zm || false];
+    this.serwisService.updateServiceDocuments(service.id, zmArray).subscribe(updatedService => {
+      this.servicesRefresh();
+    });
     service.editing = false;
+  }
+
+  // Dodawanie nowej usługi
+  addService() {
+    const formData = {
+      desc: this.serviceForm.value.description,
+      clientId: this.serviceForm.value.client,
+      serviceManId: this.serviceForm.value.serviceMan,
+      carServicesIds: this.serviceForm.value.carService,
+      zm: this.serviceForm.value.zm
+    };
+
+    this.serwisService.add(formData.desc, formData.clientId).subscribe({
+      next: (serviceId: number) => {
+        // Pprzypisujemy pracownika do usługi
+        this.serwisService.assignServiceManToService(serviceId, formData.serviceManId).subscribe({
+          next: () => {
+            // Przypisujemy części do usługi
+            this.serwisService.assignPartsToService(serviceId, this.pickedParts).subscribe({
+              next: () => {
+                // Przypisujemy usługi samochodowe do usługi
+                this.serwisService.assignCarServicesToService(serviceId, formData.carServicesIds).subscribe({
+                  next: () => {
+                    // Aktualizujemy dokumenty usługi
+                    this.serwisService.updateServiceDocuments(serviceId, formData.zm).subscribe(updatedService => {
+                      this.partsRefresh();
+                      this.servicesRefresh();
+                      this.pickedParts = [];  // Czyścimy tablicę pickedParts
+                      this.serviceForm.reset();
+                    });
+                  },
+                });
+              },
+            });
+          },
+        });
+      },
+      error: err => { console.log(err); }
+    });
   }
 
   // Anulowanie trybu edycji dla usługi
@@ -253,38 +297,6 @@ export class ServiceComponent implements OnInit{
     }
     // Ustawienie zaktualizowanej listy wybranych usług samochodowych z powrotem do wartości formularza
     this.serviceForm?.get('carService')?.setValue(selectedCarServices);
-  }
-
-  // Dodawanie nowej usługi
-  addService() {
-    const formData = {
-      desc: this.serviceForm.value.description,
-      clientId: this.serviceForm.value.client,
-      serviceManId: this.serviceForm.value.serviceMan,
-      carServicesIds: this.serviceForm.value.carService
-    };
-
-    this.serwisService.add(formData.desc, formData.clientId).subscribe({
-      next: (serviceId: number) => {
-        this.serwisService.assignServiceManToService(serviceId, formData.serviceManId).subscribe({
-          next: () => {
-            this.serwisService.assignPartsToService(serviceId, this.pickedParts).subscribe({
-              next: () => {
-                this.serwisService.assignCarServicesToService(serviceId, formData.carServicesIds).subscribe({
-                  next: () => {
-                    this.servicesRefresh();
-                    this.partsRefresh();
-                    this.pickedParts = [];
-                    this.serviceForm.reset();
-                  },
-                });
-              },
-            });
-          },
-        });
-      },
-      error: err => {console.log(err);}
-    });
   }
 
   // Zarządzanie zaznaczeniem części

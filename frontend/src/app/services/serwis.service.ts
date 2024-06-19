@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ServiceResponse } from '../model/service/service-response';
 import { ServicePartRequest } from '../model/part/service-part-request';
 import {CarServiceResponse} from "../model/carService/car-service-response";
+import {PartResponse} from "../model/part/part-response";
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +48,10 @@ export class SerwisService {
   // Metoda do przypisywania usług samochodowych do usługi o podanym identyfikatorze
   assignCarServicesToService(serviceId: number, carServiceIds: number[]): Observable<any> {
     return this.http.post<any>(`${this.API}/${serviceId}/car-service`, carServiceIds);
+  }
+
+  // Metoda do przypisywania dokumentow do serwisu o podanym identyfikatorze
+  updateServiceDocuments(serviceId: number, document: boolean[]): Observable<ServiceResponse> {
+    return this.http.put<ServiceResponse>(`${this.API}/document?service=${serviceId}&document=${document}`, {});
   }
 }

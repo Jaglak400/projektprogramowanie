@@ -38,4 +38,8 @@ export class PartsService {
     return this.http.put<PartResponse>(`${this.api}/${id}`, part);
   }
 
+  // Metoda do aktualizowania dokumentu na podstawie identyfikatora
+  updatePartDocuments(partId: number, documents: boolean[]): Observable<PartResponse> {
+    return this.http.put<PartResponse>(`${this.api}/${partId}/documents`, documents);
+  }
 }

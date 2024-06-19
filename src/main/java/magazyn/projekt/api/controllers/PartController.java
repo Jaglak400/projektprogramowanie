@@ -125,23 +125,29 @@ public class PartController {
         return ResponseEntity.ok(part);
     }
 
-    @PutMapping("/documents")
-    public ResponseEntity<?> setPartDocuments(@RequestParam("part") Long partId,
-                                              @RequestBody Boolean[] documents){
-        if(documents.length != 3)
+    // Metoda obsługująca żądanie PUT na ścieżce /api/part/documents
+    @PutMapping("/{id}/documents")
+    @PreAuthorize("hasRole('WAREHOUSE') or hasRole('ADMIN')")
+    public ResponseEntity<?> setPartDocuments(@PathVariable("id") Long partId,
+                                              @RequestBody Boolean[] documents) {
+        // Sprawdzenie czy przesłano dokładnie 3 dokumenty
+        if (documents.length != 3)
             return ResponseEntity.badRequest().build();
-        var partOpt = partRepo.findById(partId);
-        if(partOpt.isEmpty()){
+
+        // Znalezienie części o podanym ID
+        Optional<Part> partOpt = partRepo.findById(partId);
+        if (partOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        var part = partOpt.get();
+        Part part = partOpt.get();
 
+        // Zapisanie nowych wartości dokumentów do części
         part = partRepo.save(part.toBuilder()
                 .zl(documents[0])
                 .ww(documents[1])
                 .wz(documents[2])
-                .build()
-        );
+                .build());
+
         return ResponseEntity.ok(part);
     }
 }

@@ -36,7 +36,7 @@ export class ClientPanelComponent {
   };
   editingComplaint: ComplaintResponse | null = null;
   statuses = ['ACCEPTED', 'DENIED', 'ONGOING'];
-  isAdminOrService$ = new BehaviorSubject<boolean>(false); 
+  isAdminOrService$ = new BehaviorSubject<boolean>(false);
 
 
 // Obliczanie kosztu części w usłudze
@@ -129,12 +129,14 @@ export class ClientPanelComponent {
     doc.save(`Faktura_${service.id}.pdf`);
   }
 
+  // Pobranie osobistych reklamacji i przypisanie ich do zmiennej complaints
   getComplaints(): void {
     this.complaintService.getPersonalComplaints().subscribe(data => {
       this.complaints = data;
     });
   }
 
+  // Dodanie nowej reklamacji do usługi o podanym ID
   addComplaint(service: ServiceResponse, description: HTMLTextAreaElement): void {
     this.complaintService.addComplaint(service.id, description.value).subscribe(data => {
       this.complaints.push(data); // Dodanie nowej reklamacji do tablicy reklamacji
@@ -143,30 +145,38 @@ export class ClientPanelComponent {
     });
   }
 
+  // Anulowanie składania reklamacji dla usługi o podanym ID
   cancelComplaint(service: ServiceResponse){
     console.log(this.complaints);
     this.currentlyComplaining = this.currentlyComplaining.filter(c => c !== service.id);
     console.log(this.complaints);
   }
 
+  // Edycja
   editStatus(complaint: ComplaintResponse): void {
     this.editingComplaint = { ...complaint };
   }
 
+  // Sprawdzenie czy użytkownik edytuje wybraną reklamację
   isEditing(complaint: ComplaintResponse): boolean {
     return this.editingComplaint?.id === complaint.id;
   }
 
+  // Anulowanie
   cancelEdit(): void {
     this.editingComplaint = null;
   }
 
+  // Aktualizacja statusu wybranej reklamacji
   updateStatus(): void {
     // Aktualizacja statusu reklamacji
     if (this.editingComplaint) {
+      // Wywołanie usługi do aktualizacji statusu reklamacji
       this.complaintService.updateComplaintStatus(this.editingComplaint.id, this.editingComplaint.status)
         .subscribe(updatedComplaint => {
+          // Znalezienie indeksu reklamacji w tablicy complaints
           const index = this.complaints.findIndex(c => c.id === updatedComplaint.id);
+          // Jeśli znaleziono reklamację, zaktualizuj ją w tablicy
           if (index !== -1) {
             this.complaints[index] = updatedComplaint; // Aktualizacja reklamacji w tablicy
           }
@@ -182,12 +192,15 @@ export class ClientPanelComponent {
     }
   }
 
+  // Tablica przechowująca identyfikatory usług dla których aktualnie trwa składanie reklamacji
   currentlyComplaining: number[] = [];
 
+  // Rozpoczęcie procesu składania reklamacji dla usługi o podanym ID
   startComplaining(service: ServiceResponse){
     this.currentlyComplaining.push(service.id);
   }
 
+  // Sprawdzenie czy dla danej usługi obecnie jest składana reklamacja
   isComplaining(service: ServiceResponse): boolean{
     return this.currentlyComplaining.includes(service.id);
   }

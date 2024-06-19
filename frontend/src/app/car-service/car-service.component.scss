@@ -20,21 +20,6 @@ th, td {
 th {
   background-color: #f2f2f2;
 }
-th:first-child, td:first-child {
-  width: 0.5%;
-}
-
-th:nth-child(2), td:nth-child(2) {
-  width: 25%;
-}
-
-th:nth-child(3), td:nth-child(3) {
-  width: 1%;
-}
-
-th:last-child, td:last-child {
-  width: 5%;
-}
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
@@ -68,4 +53,7 @@ input, select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+}
+.actions-column {
+  width: 175px;
 }

@@ -25,12 +25,15 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
+    // Bez długiej wartości nie działa
     @Value("${projekt.jwtSecret}")
     private String jwtSecret;
 
+    // Czas życia ciasteczka
     @Value("${projekt.jwtExpirationMs}")
     private int jwtExpirationMs;
 
+    // Nazwa ciasteczka
     @Value("${projekt.jwtCookieName}")
     private String jwtCookie;
 

@@ -9,7 +9,7 @@ body {
 table {
   border-collapse: collapse;
   width: 100%;
-  max-width: 800px;
+  max-width: 60%;
   margin-bottom: 20px;
 }
 th, td {
@@ -58,4 +58,7 @@ button:last-child {
 }
 button:hover {
   background-color: #FF8A8A;
+}
+.actions-column {
+  width: 175px;
 }

@@ -216,17 +216,20 @@ public class ServiceController {
         return ResponseEntity.ok().build();
     }
 
+    // Metoda obsługująca żądanie PUT na ścieżce /api/service/document
     @PutMapping("/document")
     public ResponseEntity<?> setPartDocuments(@RequestParam("service") Long serviceId,
-                                              @RequestParam("document") Boolean document){
+                                             @RequestParam("document") Boolean[] document){
+        // Pobranie opcjonalnej wartości usługi na podstawie identyfikatora serviceId
         var serviceOpt = serviceRepo.findById(serviceId);
         if(serviceOpt.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         var service = serviceOpt.get();
 
+        // Zapisanie zaktualizowanej wersji usługi po zmianie dokumentu (zm) na podstawie parametru document
         service = serviceRepo.save(service.toBuilder()
-                .zm(document)
+                .zm(document[0])  // Ustawienie nowej wartości dokumentu (zm)
                 .build()
         );
         return ResponseEntity.ok(service);

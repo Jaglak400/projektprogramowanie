@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import {CarServiceResponse} from "../model/carService/car-service-response";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // Serwis jest dostępny w całej aplikacji
 })
 export class CarserviceService {
   private API: string = "http://localhost:8080/api/car-service";

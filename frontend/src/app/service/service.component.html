@@ -62,8 +62,16 @@
       </ng-container>
     </td>
     <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
-    <td> 
-      {{ service.zm ? "zm" : "brak" }}
+    <td>
+      <ng-container *ngIf="!service.editing">
+        {{ service.zm ? "ZM" : "Brak" }}
+      </ng-container>
+      <ng-container *ngIf="service.editing">
+        <select [(ngModel)]="service.zm" name="zm">
+          <option [ngValue]="true">ZM</option>
+          <option [ngValue]="false">Brak</option>
+        </select>
+      </ng-container>
     </td>
     <td><button (click)="generatePDF(service)">Pobierz</button></td>
     <td>

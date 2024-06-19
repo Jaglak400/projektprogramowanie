@@ -9,7 +9,7 @@
     <th>Zwrot do Dostawcy (ZL)</th>
     <th>Wydanie Wewnętrzne (WW)</th>
     <th>Wydanie Zewnętrzne (WZ)</th>
-    <th>Akcje</th>
+    <th class="actions-column">Akcje</th>
   </tr>
 
   <tr *ngFor="let part of parts; trackBy: trackByFn">
@@ -32,21 +32,53 @@
         <input type="number" formControlName="price">
       </div>
     </td>
-    <td> 
-      {{ part.zl ? "ZL" : "brak" }}
+
+    <td>
+      <ng-container *ngIf="!partToEdit || partToEdit.id !== part.id">
+        {{ part.zl ? "ZL" : "brak" }}
+      </ng-container>
+      <ng-container *ngIf="partToEdit && partToEdit.id === part.id">
+        <div [formGroup]="editPartForm">
+          <select formControlName="zl">
+            <option [value]="true" [selected]="editPartForm.get('zl')?.value === true">ZL</option>
+            <option [value]="false" [selected]="editPartForm.get('zl')?.value === false">brak</option>
+          </select>
+        </div>
+      </ng-container>
     </td>
-    <td> 
-      {{ part.ww ? "WW" : "brak" }}
+    <td>
+      <ng-container *ngIf="!partToEdit || partToEdit.id !== part.id">
+        {{ part.ww ? "WW" : "brak" }}
+      </ng-container>
+      <ng-container *ngIf="partToEdit && partToEdit.id === part.id">
+        <div [formGroup]="editPartForm">
+          <select formControlName="ww">
+            <option [value]="true" [selected]="editPartForm.get('ww')?.value === true">WW</option>
+            <option [value]="false" [selected]="editPartForm.get('ww')?.value === false">brak</option>
+          </select>
+        </div>
+      </ng-container>
     </td>
-    <td> 
-      {{ part.wz ? "WZ" : "brak" }}
+    <td>
+      <ng-container *ngIf="!partToEdit || partToEdit.id !== part.id">
+        {{ part.wz ? "WZ" : "brak" }}
+      </ng-container>
+      <ng-container *ngIf="partToEdit && partToEdit.id === part.id">
+        <div [formGroup]="editPartForm">
+          <select formControlName="wz">
+            <option [value]="true" [selected]="editPartForm.get('wz')?.value === true">WZ</option>
+            <option [value]="false" [selected]="editPartForm.get('wz')?.value === false">brak</option>
+          </select>
+        </div>
+      </ng-container>
     </td>
-    <td *ngIf="partToEdit?.id !== part.id">
+
+    <td class="actions-column" *ngIf="partToEdit?.id !== part.id">
       <button (click)="editPart(part)">Edit</button>
       <button (click)="deletePart(part.id)">Delete</button>
     </td>
-    <td *ngIf="partToEdit?.id === part.id">
-      <button (click)="updatePart()">Save</button>
+    <td class="actions-column" *ngIf="partToEdit?.id === part.id">
+      <button (click)="savePart()">Save</button>
       <button (click)="cancelEdit()">Cancel</button>
     </td>
   </tr>
