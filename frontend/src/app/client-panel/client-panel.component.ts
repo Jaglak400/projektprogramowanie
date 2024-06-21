@@ -2,12 +2,18 @@ import { Component, inject } from '@angular/core';
 import { ClientService } from '../services/client.service';
 import { ServiceResponse } from '../model/service/service-response';
 import { ServicePartResponse } from '../model/part/service-part-response';
-import {jsPDF} from "jspdf";
-import {CarServiceResponse} from "../model/carService/car-service-response";
+import { jsPDF } from "jspdf";
+import { CarServiceResponse } from "../model/carService/car-service-response";
 import { ComplaintResponse } from '../model/complaint-response';
 import { BehaviorSubject } from 'rxjs';
 import { LoginService } from '../services/login.service';
 import { ComplaintService } from '../services/complaint.service';
+import { StorageService } from '../services/storage.service';
+import { VisitResponse } from '../model/visit-response';
+import { VisitService } from '../services/visit.service';
+import { UserResponse } from '../model/user-response';
+import { UserService } from '../services/user.service';
+import '@angular/common/locales/global/pl';
 @Component({
   selector: 'app-client-panel',
   templateUrl: './client-panel.component.html',
@@ -15,32 +21,53 @@ import { ComplaintService } from '../services/complaint.service';
 })
 export class ClientPanelComponent {
 
-  constructor(private clientService: ClientService, private loginService: LoginService, private complaintService: ComplaintService){
+  constructor(private clientService: ClientService, private loginService: LoginService,
+    private complaintService: ComplaintService, private storageService: StorageService,
+    private visitService: VisitService, private userService: UserService) {
     // Pobieranie usług klienta przy inicjalizacji komponentu
-    clientService.getClientServices().subscribe({
-      next: res => {
-        this.clientServices = res;
-      }
-    });
+    this.isAdminOrService = this.storageService.hasAnyRole(['ADMIN', 'SERVICE']);
+    if (!this.isAdminOrService) {
+      clientService.getClientServices().subscribe({
+        next: res => {
+          this.clientServices = res;
+        }
+      });
+      visitService.getPersonal().subscribe({
+        next: res => {
+          this.visits = res;
+        }
+      });
+    }
+    else {      
+      visitService.getAll().subscribe({
+        next: res => {
+          this.visits = res;
+        }
+      });
+      userService.getAllByRole("ROLE_CLIENT").subscribe({
+        next: res => {
+          this.clients = res;
+        }
+      })
+    }
     this.getComplaints(); // Pobranie wszystkich reklamacji przy inicjalizacji komponentu
-    this.loginService.hasAnyRole(['ROLE_ADMIN', 'ROLE_SERVICE']).subscribe(isAdminOrService => {
-      this.isAdminOrService$.next(isAdminOrService); // Sprawdzenie czy użytkownik ma rolę admina lub serwisanta
-    });
   }
 
   clientServices: ServiceResponse[] = [];
   complaints: ComplaintResponse[] = [];
+  visits: VisitResponse[] = [];
+  clients: UserResponse[] = [];
   newComplaint = {
     serviceId: null as number | null, // Identyfikator usługi dla nowej reklamacji
     description: ''
   };
   editingComplaint: ComplaintResponse | null = null;
   statuses = ['ACCEPTED', 'DENIED', 'ONGOING'];
-  isAdminOrService$ = new BehaviorSubject<boolean>(false);
+  isAdminOrService: boolean = false;
 
 
-// Obliczanie kosztu części w usłudze
-  calculatePartCost(serviceParts: ServicePartResponse[]){
+  // Obliczanie kosztu części w usłudze
+  calculatePartCost(serviceParts: ServicePartResponse[]) {
     let cost = 0;
     serviceParts.forEach(sPart => {
       cost += sPart.part.price * sPart.count
@@ -49,12 +76,26 @@ export class ClientPanelComponent {
   }
 
   // Obliczanie kosztu usługi
-  calculateCarServicesCost(carServices: CarServiceResponse[]){
+  calculateCarServicesCost(carServices: CarServiceResponse[]) {
     let cost = 0;
     carServices.forEach(cService => {
       cost += cService.price
     })
     return cost;
+  }
+
+  addVisit(clientSelect: HTMLSelectElement, dateInput: HTMLInputElement){
+      let date = new Date(dateInput.value);
+      this.visitService.add(
+        `${date.getFullYear()}-${date.getMonth() + 1  < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}-${date.getDate()}`,
+        Number.parseInt(clientSelect.value)
+      ).subscribe({
+        next: res => {
+          clientSelect.value = '';
+          dateInput.value = '';
+          this.visits.push(res);
+        }
+      })
   }
 
   async generatePDF(service: ServiceResponse) {
@@ -131,9 +172,16 @@ export class ClientPanelComponent {
 
   // Pobranie osobistych reklamacji i przypisanie ich do zmiennej complaints
   getComplaints(): void {
-    this.complaintService.getPersonalComplaints().subscribe(data => {
-      this.complaints = data;
-    });
+    if (this.isAdminOrService) {
+      this.complaintService.getAllComplaints().subscribe(data => {
+        this.complaints = data;
+      });
+    }
+    else {
+      this.complaintService.getPersonalComplaints().subscribe(data => {
+        this.complaints = data;
+      });
+    }
   }
 
   // Dodanie nowej reklamacji do usługi o podanym ID
@@ -146,7 +194,7 @@ export class ClientPanelComponent {
   }
 
   // Anulowanie składania reklamacji dla usługi o podanym ID
-  cancelComplaint(service: ServiceResponse){
+  cancelComplaint(service: ServiceResponse) {
     console.log(this.complaints);
     this.currentlyComplaining = this.currentlyComplaining.filter(c => c !== service.id);
     console.log(this.complaints);
@@ -187,7 +235,7 @@ export class ClientPanelComponent {
 
   // Rozpoczęcie edycji statusu reklamacji po kliknięciu jeśli użytkownik ma odpowiednią rolę
   onStatusClick(complaint: ComplaintResponse): void {
-    if (this.isAdminOrService$.value) {
+    if (this.isAdminOrService) {
       this.editStatus(complaint);
     }
   }
@@ -196,12 +244,12 @@ export class ClientPanelComponent {
   currentlyComplaining: number[] = [];
 
   // Rozpoczęcie procesu składania reklamacji dla usługi o podanym ID
-  startComplaining(service: ServiceResponse){
+  startComplaining(service: ServiceResponse) {
     this.currentlyComplaining.push(service.id);
   }
 
   // Sprawdzenie czy dla danej usługi obecnie jest składana reklamacja
-  isComplaining(service: ServiceResponse): boolean{
+  isComplaining(service: ServiceResponse): boolean {
     return this.currentlyComplaining.includes(service.id);
   }
 }

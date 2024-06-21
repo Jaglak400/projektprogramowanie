@@ -4,13 +4,15 @@
       <a routerLink="/parts">Części</a> |
       <a routerLink="/car-service">Usługi</a> |
       <a routerLink="/users">Użytkownicy</a> |
-      <a routerLink="/service">Serwis</a>
+      <a routerLink="/service">Serwis</a> |
+      <a routerLink="/client">Reklamacje</a>
     </div>
   }
   @if (isService) {
     <div class="nav-links">
       <a routerLink="/car-service">Usługi</a> |
-      <a routerLink="/service">Serwis</a>
+      <a routerLink="/service">Serwis</a> |
+      <a routerLink="/client">Reklamacje</a>
     </div>
   }
   <button class="logout-button" (click)="logout()">Wyloguj</button>

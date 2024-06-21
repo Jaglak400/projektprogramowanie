@@ -11,7 +11,7 @@ import {PartResponse} from "../model/part/part-response";
 })
 export class SerwisService {
 
-  API: string = "http://localhost:8080/api/service"
+  API: string = "http://localhost:8081/api/service"
 
   constructor(private http: HttpClient) { }
 

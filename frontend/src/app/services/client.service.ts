@@ -8,7 +8,7 @@ import { ServiceResponse } from '../model/service/service-response';
 })
 export class ClientService {
 
-  private api: string = "http://localhost:8080/api/client/";
+  private api: string = "http://localhost:8081/api/client/";
 
   constructor(private http: HttpClient) { }
 

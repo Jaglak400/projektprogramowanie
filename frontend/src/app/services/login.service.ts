@@ -9,7 +9,7 @@ import { Observable, map } from 'rxjs';
 })
 export class LoginService {
 
-  private api: string = "http://localhost:8080/api/auth/";
+  private api: string = "http://localhost:8081/api/auth/";
 
   constructor(private http: HttpClient) { }
 
@@ -22,11 +22,5 @@ export class LoginService {
   // Metoda do wylogowania użytkownika
   logout(){
     return this.http.get(this.api + 'logout');
-  }
-
-  hasAnyRole(roles: string[]): Observable<boolean> {
-    return this.http.get<string[]>(`${this.api}roles`).pipe(
-      map(userRoles => roles.some(role => userRoles.includes(role)))
-    );
   }
 }

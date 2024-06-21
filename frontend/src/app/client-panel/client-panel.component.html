@@ -1,67 +1,102 @@
 <app-nav></app-nav>
+@if(!isAdminOrService){
 <h2>Serwisy</h2>
 <table style="border: black 1px solid; border-collapse: collapse;">
-    <tr>
-      <th>ID</th>
-      <th>Opis</th>
-      <th>Status</th>
-      <th>Serwisant</th>
-      <th>Koszt</th>
-      <th style="width: 95px;">Faktura VAT</th>
-      <th>Reklamacja</th>
-
-    </tr>
-    <tr *ngFor="let service of clientServices">
-      <td>{{ service.id }}</td>
-      <td>{{ service.description }}</td>
-      <td>{{ service.status }}</td>
-      <td>{{ service.serviceMan.name + " " + service.serviceMan.name}}</td>
-      @if (service.status === "COMPLETED") {
-        <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
-      }
-      @else {
-        <td> - </td>
-      }
-      <td>
-        <button (click)="generatePDF(service)" [disabled]="service.status !== 'COMPLETED'">Pobierz</button>
-      </td>
-      <td>
-        @if(!isComplaining(service)){
-          <button (click)="startComplaining(service)">Reklamacja</button>
-        }
-        @else{
-          <textarea #descText></textarea><br>
-          <button (click)="addComplaint(service, descText)">Dodaj</button>
-          <button (click)="cancelComplaint(service)">Anuluj</button>
-        }
-      </td>
-    </tr>
-  </table>
-<h2>Reklamacje</h2>
-<table>
-  <thead>
   <tr>
     <th>ID</th>
     <th>Opis</th>
-    <th>Usługa</th>
     <th>Status</th>
+    <th>Serwisant</th>
+    <th>Koszt</th>
+    <th style="width: 95px;">Faktura VAT</th>
+    <th>Reklamacja</th>
+
   </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let complaint of complaints">
-    <td>{{ complaint.id }}</td>
-    <td>{{ complaint.description }}</td>
-    <td>{{ complaint.service.id }}</td>
+  <tr *ngFor="let service of clientServices">
+    <td>{{ service.id }}</td>
+    <td>{{ service.description }}</td>
+    <td>{{ service.status }}</td>
+    <td>{{ service.serviceMan.name + " " + service.serviceMan.name}}</td>
+    @if (service.status === "COMPLETED") {
+    <td>{{ calculatePartCost(service.serviceParts) + calculateCarServicesCost(service.carServices) }}zł</td>
+    }
+    @else {
+    <td> - </td>
+    }
     <td>
-      <span *ngIf="!isEditing(complaint)" (click)="onStatusClick(complaint)">
-        {{ complaint.status }}
-      </span>
-      <ng-container *ngIf="isEditing(complaint)">
-        <select [(ngModel)]="editingComplaint!.status" (change)="updateStatus()">
-          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
-        </select>
-      </ng-container>
+      <button (click)="generatePDF(service)" [disabled]="service.status !== 'COMPLETED'">Pobierz</button>
+    </td>
+    <td>
+      @if(!isComplaining(service)){
+      <button (click)="startComplaining(service)">Reklamacja</button>
+      }
+      @else{
+      <textarea #descText></textarea><br>
+      <button (click)="addComplaint(service, descText)">Dodaj</button>
+      <button (click)="cancelComplaint(service)">Anuluj</button>
+      }
     </td>
   </tr>
+</table>
+}
+
+<h2>Reklamacje</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Opis</th>
+      <th>Usługa</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let complaint of complaints">
+      <td>{{ complaint.id }}</td>
+      <td>{{ complaint.description }}</td>
+      <td>{{ complaint.service.id }}</td>
+      <td>
+        <span *ngIf="!isEditing(complaint)" (click)="onStatusClick(complaint)">
+          {{ complaint.status }}
+        </span>
+        <ng-container *ngIf="isEditing(complaint)">
+          <select [(ngModel)]="editingComplaint!.status" (change)="updateStatus()">
+            <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+          </select>
+        </ng-container>
+      </td>
+    </tr>
   </tbody>
 </table>
+
+<h2>Wizyty</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Data</th>
+      <th>Klient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let visit of visits">
+      <td>{{ visit.id }}</td>
+      <td>{{ visit.date | date:'shortDate':'+0200':'pl' }}</td>
+      <td> {{ visit.client.name }} {{ visit.client.surname }}</td>
+    </tr>
+  </tbody>
+</table>
+
+@if (isAdminOrService) {
+  <h2>Dodaj wizytę</h2>
+  <label for="client">Klient:</label><br>
+  <select id="client" #client>
+    @for (client of clients; track $index) {
+      <option [value]="client.id">{{ client.name }} {{ client.surname }}</option>
+    }
+  </select>
+  <br>
+  <label for="date">Data:</label><br>
+  <input type="date" id="date" #date>
+  <button type="button" (click)="addVisit(client, date)">Dodaj</button>
+}

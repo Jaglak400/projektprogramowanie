@@ -8,7 +8,7 @@ import { ComplaintResponse } from '../model/complaint-response'
 })
 export class ComplaintService {
 
-  private API = 'http://localhost:8080/api/complaint';
+  private API = 'http://localhost:8081/api/complaint';
 
   constructor(private http: HttpClient) { }
 

@@ -9,7 +9,7 @@ import {PartRequest} from "../model/part/part-request";
 })
 export class PartsService {
 
-  private api: string = "http://localhost:8080/api/part";
+  private api: string = "http://localhost:8081/api/part";
 
   constructor(private http: HttpClient) { }
 

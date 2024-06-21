@@ -27,7 +27,28 @@ export class StorageService {
   }
 
   // Metoda do sprawdzania czy użytkownik jest administratorem
-  hasRole(role: string): boolean{
+  hasAnyRole(roles: string[]): boolean{
+    if(!this.isUserLoggedIn())
+      return false;
+
+    // Pobranie danych użytkownika z localStorage
+    const user = JSON.parse(localStorage.getItem('user')!) as UserResponse;
+
+    if(user === undefined)
+      return false;
+         
+    for(var ur = 0; ur < user.roles.length; ur++){
+      for(var r = 0; r < roles.length; r++){
+        if(user.roles[ur].name === `ROLE_${roles[r]}`){
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+   // Metoda do sprawdzania czy użytkownik jest administratorem
+   hasRole(role: string): boolean{
     if(!this.isUserLoggedIn())
       return false;
 

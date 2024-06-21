@@ -8,7 +8,7 @@ import {CarServiceResponse} from "../model/carService/car-service-response";
   providedIn: 'root' // Serwis jest dostępny w całej aplikacji
 })
 export class CarserviceService {
-  private API: string = "http://localhost:8080/api/car-service";
+  private API: string = "http://localhost:8081/api/car-service";
 
   constructor(private http: HttpClient) { }
 
